@@ -1,0 +1,10 @@
+{
+  "name": "roxygen-style",
+  "version": "0.1.0",
+  "description": "Wording and style rules for roxygen2 documentation in R packages, with a heuristic checker.",
+  "author": { "name": "Jeffrey Arnold" },
+  "homepage": "https://github.com/jrnold/roxygen-style",
+  "repository": "https://github.com/jrnold/roxygen-style",
+  "license": "MIT",
+  "keywords": ["r", "roxygen2", "documentation", "style", "tidyverse"]
+}

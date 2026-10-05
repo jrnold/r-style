@@ -1,0 +1,16 @@
+{
+  "name": "roxygen-style",
+  "owner": {
+    "name": "Jeffrey Arnold"
+  },
+  "metadata": {
+    "description": "Roxygen2 documentation style rules for R packages."
+  },
+  "plugins": [
+    {
+      "name": "roxygen-style",
+      "source": "./",
+      "description": "Wording and style rules for roxygen2 documentation in R packages, with a heuristic checker."
+    }
+  ]
+}
