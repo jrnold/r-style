@@ -17,9 +17,41 @@ import os
 import re
 import sys
 
-SMALL = {"a", "an", "the", "of", "and", "or", "to", "in", "for", "with", "by", "on", "as", "at", "from", "via", "vs"}
+SMALL = {
+    "a",
+    "an",
+    "the",
+    "of",
+    "and",
+    "or",
+    "to",
+    "in",
+    "for",
+    "with",
+    "by",
+    "on",
+    "as",
+    "at",
+    "from",
+    "via",
+    "vs",
+}
 # Second words that suggest the first word is a verb ("Creates a ...").
-VERBISH_NEXT = {"a", "an", "the", "one", "each", "all", "whether", "if", "its", "any", "new", "multiple", "two"}
+VERBISH_NEXT = {
+    "a",
+    "an",
+    "the",
+    "one",
+    "each",
+    "all",
+    "whether",
+    "if",
+    "its",
+    "any",
+    "new",
+    "multiple",
+    "two",
+}
 TAG = re.compile(r"^@(\w+)\s*(.*)$")
 FUN = re.compile(r"^`?([\w.]+)`?\s*(<-|=)\s*function\b")
 
@@ -37,26 +69,72 @@ SPELLING = [
     (r"colour(s|ed|ing|ful|less|ation)?", r"color(s|ed|ing|ful|less|ation)?", "color", "colour"),
     (r"behaviour(s|al)?", r"behavior(s|al)?", "behavior", "behaviour"),
     (r"favour(s|ed|ing|ite|ites)?", r"favor(s|ed|ing|ite|ites)?", "favor", "favour"),
-    (r"(neighbour|honour|labour|flavour|humour|rumour)(s|ed|ing|hood)?",
-     r"(neighbor|honor|labor|flavor|humor|rumor)(s|ed|ing|hood)?", "-or", "-our"),
-    (r"(centre|metre|litre|fibre|theatre)(s|d)?", r"(center|meter|liter|fiber|theater)(s|ed)?", "-er", "-re"),
+    (
+        r"(neighbour|honour|labour|flavour|humour|rumour)(s|ed|ing|hood)?",
+        r"(neighbor|honor|labor|flavor|humor|rumor)(s|ed|ing|hood)?",
+        "-or",
+        "-our",
+    ),
+    (
+        r"(centre|metre|litre|fibre|theatre)(s|d)?",
+        r"(center|meter|liter|fiber|theater)(s|ed)?",
+        "-er",
+        "-re",
+    ),
     (r"grey(s|ed|ish|scale)?", r"gray(s|ed|ish|scale)?", "gray", "grey"),
     (r"analys(e|es|ed|ing)", r"analyz(e|es|ed|ing)", "analyze", "analyse"),
     (r"(" + _ISE + r")s" + _END, r"(" + _ISE + r")z" + _END, "-ize", "-ise"),
-    (r"(model|label|cancel|travel|signal)l(ed|ing|er|ers)", r"(model|label|cancel|travel|signal)(ed|ing|er|ers)",
-     "single l (modeling, labeled)", "double l (modelling, labelled)"),
-    (r"(catalogue|analogue)(s|d)?", r"(catalog|analog)(s|ed)?", "catalog/analog", "catalogue/analogue"),
+    (
+        r"(model|label|cancel|travel|signal)l(ed|ing|er|ers)",
+        r"(model|label|cancel|travel|signal)(ed|ing|er|ers)",
+        "single l (modeling, labeled)",
+        "double l (modelling, labelled)",
+    ),
+    (
+        r"(catalogue|analogue)(s|d)?",
+        r"(catalog|analog)(s|ed)?",
+        "catalog/analog",
+        "catalogue/analogue",
+    ),
     (r"(licence|defence|offence)(s)?", r"(license|defense|offense)(s)?", "-se", "-ce"),
     (r"(whilst|amongst)", r"(while|among)", "while/among", "whilst/amongst"),
 ]
 # Text that keeps its own spelling: backticked code, double-quoted text
 # (titles of cited works), Rd code/link macros, and [fn()] / [topic] links.
-_EXEMPT = re.compile(r'`[^`]*`|"[^"]*"|' r"\\(code|link|pkg|var|env|file|href|url)(\[[^]]*\])?\{[^}]*\}|\[[^]\s]*\]")
+_EXEMPT = re.compile(
+    r'`[^`]*`|"[^"]*"|' r"\\(code|link|pkg|var|env|file|href|url)(\[[^]]*\])?\{[^}]*\}|\[[^]\s]*\]"
+)
 # Tags whose text is not prose.
-_NOT_PROSE = {"examples", "examplesIf", "example", "rdname", "family", "export", "importFrom",
-              "import", "inheritParams", "inherit", "inheritDotParams", "inheritSection",
-              "name", "aliases", "usage", "keywords", "concept", "docType", "include", "eval",
-              "evalRd", "S3method", "method", "useDynLib", "encoding", "md", "noMd", "order"}
+_NOT_PROSE = {
+    "examples",
+    "examplesIf",
+    "example",
+    "rdname",
+    "family",
+    "export",
+    "importFrom",
+    "import",
+    "inheritParams",
+    "inherit",
+    "inheritDotParams",
+    "inheritSection",
+    "name",
+    "aliases",
+    "usage",
+    "keywords",
+    "concept",
+    "docType",
+    "include",
+    "eval",
+    "evalRd",
+    "S3method",
+    "method",
+    "useDynLib",
+    "encoding",
+    "md",
+    "noMd",
+    "order",
+}
 
 
 def target_spelling(pkg, override):
@@ -152,7 +230,12 @@ def main():
             if "noRd" in tn:
                 continue
             fun = FUN.match(nxt)
-            topic = tv.get("rdname") or tv.get("name") or (fun.group(1) if fun else None) or f"{f}:{start}"
+            topic = (
+                tv.get("rdname")
+                or tv.get("name")
+                or (fun.group(1) if fun else None)
+                or f"{f}:{start}"
+            )
             # A bare `@export` block (S3 method, re-export) creates no help topic.
             makes_topic = bool(paras) or tn & {"title", "rdname", "describeIn", "name"}
             if not makes_topic:
@@ -168,7 +251,10 @@ def main():
             # Title
             title = None
             if "title" in tn:
-                title = (next(ln for t, _, ln in tags if t == "title"), " ".join(tv["title"].split()))
+                title = (
+                    next(ln for t, _, ln in tags if t == "title"),
+                    " ".join(tv["title"].split()),
+                )
             elif paras:
                 title = paras[0]
             if title:
@@ -182,8 +268,15 @@ def main():
                     hit(f, ln, 1, f"title looks Title Case (use sentence case): {t!r}")
                 if len(words) >= 2:
                     w0, w1 = words[0], words[1].lower()
-                    if re.fullmatch(r"[A-Z][a-z]{2,}[^su]s", w0) and (w1 in VERBISH_NEXT or w1 == "code"):
-                        hit(f, ln, 2, f"title starts with third-person verb {w0!r} (use imperative): {t!r}")
+                    if re.fullmatch(r"[A-Z][a-z]{2,}[^su]s", w0) and (
+                        w1 in VERBISH_NEXT or w1 == "code"
+                    ):
+                        hit(
+                            f,
+                            ln,
+                            2,
+                            f"title starts with third-person verb {w0!r} (use imperative): {t!r}",
+                        )
                 if len(t) > 65:
                     hit(f, ln, 3, f"title is {len(t)} chars (> 65)")
 
@@ -217,7 +310,12 @@ def main():
                     l = re.sub(r"^[\w.,`]+\s*", "", l) if m else l
                 for word, fix in spelling_hits(l, spelling):
                     variety = "American" if spelling == "us" else "British"
-                    hit(f, start + off, 18, f"{word!r}: use {variety} spelling ({fix}), or backtick it if it names code")
+                    hit(
+                        f,
+                        start + off,
+                        18,
+                        f"{word!r}: use {variety} spelling ({fix}), or backtick it if it names code",
+                    )
 
     for name, T in topics.items():
         if T["export"] and not T["returns"] and not T["data"]:
@@ -226,8 +324,11 @@ def main():
 
     print("\n".join(sorted(out, key=lambda s: (s.split(":")[0], int(s.split(":")[1])))))
     counts = collections.Counter(re.search(r"rule (\d+)", s).group(1) for s in out)
-    print(f"\n{len(out)} findings: " + ", ".join(f"rule {k}: {v}" for k, v in sorted(counts.items(), key=lambda kv: int(kv[0]))),
-          file=sys.stderr)
+    print(
+        f"\n{len(out)} findings: "
+        + ", ".join(f"rule {k}: {v}" for k, v in sorted(counts.items(), key=lambda kv: int(kv[0]))),
+        file=sys.stderr,
+    )
 
 
 if __name__ == "__main__":
