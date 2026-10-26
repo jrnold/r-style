@@ -39,36 +39,36 @@ Only three mention NEWS, and only one gives rules.
 
 Percentages are of bullets unless noted.
 
-| Measure | Overall | Range across packages |
-|---|---|---|
-| Release headings `# pkg X.Y.Z` | 107/107 sections | all |
-| Heading contains a date | 0/107 | all 0 |
-| Development heading exactly `# pkg (development version)` | 11 of 12 packages | one package was at a release heading |
-| Section has `##` subheadings | 27% of sections | 0% (readr, rlang, cli) – 88% (tibble) |
-| Bullet marker `*` / `-` | 97% / 3% | `-` only in tibble |
-| Blank line between bullets | 76% | 36% (ggplot2) – 100%; ≥94% in 9 of 12 |
-| Ends with `.` | 86% | 73% (ggplot2) – 100% |
-| Has a trailing `(#n)`/`(@u, #n)` | 78% | — |
-| …of which period after the parenthesis `(#n).` | 66% of all bullets | — |
-| …no period at all | 12% | — |
-| …period before the parenthesis `. (#n)` | 1% | — |
-| Mentions an issue/PR number | 81% | 36% (readr) – 92% (tidyr) |
-| Credits an `@user` | 40% | 0% (vctrs), 9% (dplyr) – 71% (ggplot2) |
-| Names a function `` `f()` `` anywhere | 74% | — |
-| …in the first 60 characters | 66% (89% of those that name one) | — |
-| Contains "now" | 41% | 0% (tibble) – 60% (cli) |
-| Leads with past tense (Fixed, Added, Removed…) | 9% | 0–22% (vctrs, ggplot2, rlang, purrr highest) |
-| Leads with imperative (Fix, Add, Remove…) | 2% | 0–27% (tibble, whose NEWS is generated from commits) |
-| Leads with "New" | 10% | — |
-| Contains "we" | 2% | — |
-| Wrapped over more than one line | 63% | — |
-| Any line longer than 80 characters | 17% | 0% (cli) – 73% (readr) |
-| Single-line bullet longer than 80 | 13% | — |
-| Average length | 21 words | — |
-| Mentions "deprecated" in the first 200 characters | 6% | — |
-| …and names the replacement (“in favour of”, etc.) | 21 of 64 | — |
-| "Previously …" explanation | 2% | — |
-| Starts with "BREAKING" | 2 bullets (0.2%) | — |
+  | Measure                                                   | Overall                          | Range across packages                                |
+  | --------------------------------------------------------- | -------------------------------- | ---------------------------------------------------- |
+  | Release headings `# pkg X.Y.Z`                            | 107/107 sections                 | all                                                  |
+  | Heading contains a date                                   | 0/107                            | all 0                                                |
+  | Development heading exactly `# pkg (development version)` | 11 of 12 packages                | one package was at a release heading                 |
+  | Section has `##` subheadings                              | 27% of sections                  | 0% (readr, rlang, cli) – 88% (tibble)                |
+  | Bullet marker `*` / `-`                                   | 97% / 3%                         | `-` only in tibble                                   |
+  | Blank line between bullets                                | 76%                              | 36% (ggplot2) – 100%; ≥94% in 9 of 12                |
+  | Ends with `.`                                             | 86%                              | 73% (ggplot2) – 100%                                 |
+  | Has a trailing `(#n)`/`(@u, #n)`                          | 78%                              | —                                                    |
+  | …of which period after the parenthesis `(#n).`            | 66% of all bullets               | —                                                    |
+  | …no period at all                                         | 12%                              | —                                                    |
+  | …period before the parenthesis `. (#n)`                   | 1%                               | —                                                    |
+  | Mentions an issue/PR number                               | 81%                              | 36% (readr) – 92% (tidyr)                            |
+  | Credits an `@user`                                        | 40%                              | 0% (vctrs), 9% (dplyr) – 71% (ggplot2)               |
+  | Names a function `` `f()` `` anywhere                     | 74%                              | —                                                    |
+  | …in the first 60 characters                               | 66% (89% of those that name one) | —                                                    |
+  | Contains "now"                                            | 41%                              | 0% (tibble) – 60% (cli)                              |
+  | Leads with past tense (Fixed, Added, Removed…)            | 9%                               | 0–22% (vctrs, ggplot2, rlang, purrr highest)         |
+  | Leads with imperative (Fix, Add, Remove…)                 | 2%                               | 0–27% (tibble, whose NEWS is generated from commits) |
+  | Leads with "New"                                          | 10%                              | —                                                    |
+  | Contains "we"                                             | 2%                               | —                                                    |
+  | Wrapped over more than one line                           | 63%                              | —                                                    |
+  | Any line longer than 80 characters                        | 17%                              | 0% (cli) – 73% (readr)                               |
+  | Single-line bullet longer than 80                         | 13%                              | —                                                    |
+  | Average length                                            | 21 words                         | —                                                    |
+  | Mentions "deprecated" in the first 200 characters         | 6%                               | —                                                    |
+  | …and names the replacement (“in favour of”, etc.)         | 21 of 64                         | —                                                    |
+  | "Previously …" explanation                                | 2%                               | —                                                    |
+  | Starts with "BREAKING"                                    | 2 bullets (0.2%)                 | —                                                    |
 
 Subheading names, all packages, count of sections: New features 12; Breaking
 changes 7; Minor improvements and bug fixes (and five spelling variants) 14;
@@ -99,29 +99,29 @@ Sample: the development section plus the latest release of each package
 dplyr 44, scales 34, ggplot2 31. Heuristic, small counts. Script:
 `scripts/recent_patterns.py` (run after `audit_news.py` setup).
 
-| Pattern | Count (of 197) |
-|---|---|
-| Starts "New `...`" | 21 |
-| Starts "`f()` now" | 19 |
-| Starts "`f()` and ..." (grouped) | 13 |
-| Starts "`f()` no longer" | 8 (14 contain "no longer") |
-| Starts "`f()` gains" | 7 (9 contain "gains") |
-| Contains "now" | 80 (40%) |
-| Contains "instead" | 23 |
-| "Deprecated in X (Mon YYYY), use ... instead" | 11 |
-| Stage words: soft-deprecated / defunct / superseded | 5 / 2 / 2 |
-| R version requirement | 12 |
-| `pkg::fn` | 16 |
-| `(@user, #n)` / `(#n, @user)` | 49 / 17 |
-| Single `(#n)` | 66 |
-| Cross-repo `(r-lib/vctrs#n)` | 2 |
-| Contains a fenced code block | 5 |
-| Contains an inline sub-list | 7 |
-| "For example" / "e.g." | 6 |
-| Purpose clause (allowing, so you can, to control…) | 6 |
-| "Fixed a ..." | 7 |
-| `(internal)` prefix | 2 (ggplot2 only) |
-| Ends with no period | 34 (17%) |
+  | Pattern                                             | Count (of 197)             |
+  | --------------------------------------------------- | -------------------------- |
+  | Starts "New `...`"                                  | 21                         |
+  | Starts "`f()` now"                                  | 19                         |
+  | Starts "`f()` and ..." (grouped)                    | 13                         |
+  | Starts "`f()` no longer"                            | 8 (14 contain "no longer") |
+  | Starts "`f()` gains"                                | 7 (9 contain "gains")      |
+  | Contains "now"                                      | 80 (40%)                   |
+  | Contains "instead"                                  | 23                         |
+  | "Deprecated in X (Mon YYYY), use ... instead"       | 11                         |
+  | Stage words: soft-deprecated / defunct / superseded | 5 / 2 / 2                  |
+  | R version requirement                               | 12                         |
+  | `pkg::fn`                                           | 16                         |
+  | `(@user, #n)` / `(#n, @user)`                       | 49 / 17                    |
+  | Single `(#n)`                                       | 66                         |
+  | Cross-repo `(r-lib/vctrs#n)`                        | 2                          |
+  | Contains a fenced code block                        | 5                          |
+  | Contains an inline sub-list                         | 7                          |
+  | "For example" / "e.g."                              | 6                          |
+  | Purpose clause (allowing, so you can, to control…)  | 6                          |
+  | "Fixed a ..."                                       | 7                          |
+  | `(internal)` prefix                                 | 2 (ggplot2 only)           |
+  | Ends with no period                                 | 34 (17%)                   |
 
 Ones in the table that contradict the style guide (no period, "Fixed" leads,
 `(internal)`) are listed in the skill as seen but not adopted.
