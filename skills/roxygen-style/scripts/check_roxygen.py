@@ -16,6 +16,7 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 SMALL = {
     "a",
@@ -219,7 +220,9 @@ def main():
         sys.exit(f"no R/*.R files under {a.pkg}")
 
     out = []
-    topics = collections.defaultdict(lambda: {"export": None, "returns": False, "data": False})
+    topics: dict[str, dict[str, Any]] = collections.defaultdict(
+        lambda: {"export": None, "returns": False, "data": False}
+    )
 
     def hit(f, ln, rule, msg):
         if rule in want:
@@ -323,12 +326,12 @@ def main():
                     )
 
     for name, T in topics.items():
-        if T["export"] and not T["returns"] and not T["data"]:
+        if T["export"] is not None and not T["returns"] and not T["data"]:
             f, ln = T["export"]
             hit(f, ln, 10, f"exported topic {name!r} has no @returns")
 
     print("\n".join(sorted(out, key=lambda s: (s.split(":")[0], int(s.split(":")[1])))))
-    counts = collections.Counter(re.search(r"rule (\d+)", s).group(1) for s in out)
+    counts = collections.Counter(m.group(1) for s in out if (m := re.search(r"rule (\d+)", s)))
     print(
         f"\n{len(out)} findings: "
         + ", ".join(f"rule {k}: {v}" for k, v in sorted(counts.items(), key=lambda kv: int(kv[0]))),

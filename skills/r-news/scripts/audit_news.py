@@ -9,6 +9,7 @@ Heuristic regexes; counts are approximate.
 import collections
 import re
 from pathlib import Path
+from typing import Any
 
 PK = [
     "ggplot2",
@@ -34,32 +35,32 @@ def sections(txt):
 
 def bullets(body):
     # top-level bullets: lines starting "- " or "* " at col 0, with continuation lines
-    out = []
-    cur = None
+    out: list[dict[str, Any]] = []
+    cur: dict[str, Any] | None = None
     blank = False
     for ln in body.split("\n"):
         if re.match(r"^[-*] ", ln):
-            if cur:
+            if cur is not None:
                 out.append(cur)
             cur = {"lines": [ln], "blank_before": blank}
         elif ln.startswith("#"):
-            if cur:
+            if cur is not None:
                 out.append(cur)
                 cur = None
         elif ln.strip() == "":
             blank = True
-            if cur:
+            if cur is not None:
                 cur["trail_blank"] = True
             continue
-        elif cur and (ln.startswith("  ") or ln.startswith("\t")):
+        elif cur is not None and (ln.startswith("  ") or ln.startswith("\t")):
             cur["lines"].append(ln)
-        elif cur:
+        elif cur is not None:
             out.append(cur)
             cur = None
         blank = False if ln.strip() else blank
         if ln.strip() == "":
             pass
-    if cur:
+    if cur is not None:
         out.append(cur)
     for b in out:
         b["text"] = " ".join(ln.strip() for ln in b["lines"])
@@ -149,8 +150,6 @@ def main():
                 c["words"] += len(w)
                 if b["blank_before"]:
                     c["blank_before"] += 1
-                if "```" in t or (re.search(r"^\s{2,}\S", " ".join(b["lines"][1:])) and False):
-                    pass
                 if "lifecycle" in t.lower() or "deprecated" in t.lower():
                     c["deprecation_bullets"] += 1
                 if re.search(r"deprecated (in favou?r of|and replaced|in)", t):
@@ -167,13 +166,13 @@ def main():
                 for b in bl2:
                     m = re.search(r"`([A-Za-z0-9_.:]+)\(\)`", b["text"][:80])
                     names.append(m.group(1).lower() if m else None)
-                if sum(1 for n in names if n) >= 4:
+                if sum(1 for n in names if n is not None) >= 4:
                     c["order_checked"] += 1
-                    seq = [n for n in names if n]
+                    seq = [n for n in names if n is not None]
                     c["order_sorted"] += seq == sorted(seq)
                     # non-fn first?
-                    first_fn = next((i for i, n in enumerate(names) if n), None)
-                    last_nonfn = max((i for i, n in enumerate(names) if not n), default=-1)
+                    first_fn = next((i for i, n in enumerate(names) if n is not None), None)
+                    last_nonfn = max((i for i, n in enumerate(names) if n is None), default=-1)
                     c["nonfn_first_checked"] += 1
                     c["nonfn_first_ok"] += (last_nonfn < first_fn) if first_fn is not None else True
     print(

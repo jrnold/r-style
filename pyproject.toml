@@ -55,3 +55,7 @@ error-on-warning = true
 addopts = ["-ra", "--strict-markers", "--strict-config", "--import-mode=importlib"]
 xfail_strict = true
 testpaths = ["tests"]
+
+[tool.deptry]
+# recent_patterns.py imports its sibling audit_news.py, which deptry reads as a package.
+known_first_party = ["audit_news"]
