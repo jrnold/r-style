@@ -68,3 +68,27 @@ repos:
     hooks:
       - id: typos
         args: [--force-exclude]  # report only; `typos -w` fixes
+
+  - repo: local
+    hooks:
+      - id: panache-format
+        name: panache format (Quarto, R Markdown, Markdown)
+        entry: panache format
+        language: python
+        additional_dependencies: [panache-cli==3.17.0]
+        files: \.(qmd|Rmd|md)$
+      - id: panache-lint
+        name: panache lint
+        entry: panache lint
+        language: python
+        additional_dependencies: [panache-cli==3.17.0]
+        files: \.(qmd|Rmd|md)$
+
+  - repo: local
+    hooks:
+      - id: claude-plugin-validate
+        name: claude plugin validate
+        entry: claude plugin validate .
+        language: system
+        files: (^|/)(\.claude-plugin/[^/]+\.json|SKILL\.md|agents/[^/]+\.md|commands/[^/]+\.md)$
+        pass_filenames: false
