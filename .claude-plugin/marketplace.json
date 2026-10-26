@@ -1,16 +1,16 @@
 {
-  "name": "roxygen-style",
+  "name": "r-style",
   "owner": {
     "name": "Jeffrey Arnold"
   },
   "metadata": {
-    "description": "Roxygen2 documentation style rules for R packages."
+    "description": "Roxygen2 documentation style, code review, and NEWS.md rules for R packages."
   },
   "plugins": [
     {
-      "name": "roxygen-style",
+      "name": "r-style",
       "source": "./",
-      "description": "Wording and style rules for roxygen2 documentation in R packages, with a heuristic checker."
+      "description": "Style rules for R packages: roxygen2 documentation wording (with a heuristic checker) and judgment-based code review rules, and NEWS.md conventions, from the tidyverse guides."
     }
   ]
 }
