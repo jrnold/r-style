@@ -12,10 +12,10 @@ Rule 18 target spelling: `--spelling us|gb`, else DESCRIPTION `Language:`
 
 import argparse
 import collections
-import glob
 import os
 import re
 import sys
+from pathlib import Path
 
 SMALL = {
     "a",
@@ -141,8 +141,11 @@ def target_spelling(pkg, override):
     if override:
         return override
     try:
-        with open(os.path.join(pkg, "DESCRIPTION"), encoding="utf-8") as fh:
-            m = re.search(r"^Language:\s*(\S+)", fh.read(), re.M)
+        m = re.search(
+            r"^Language:\s*(\S+)",
+            (Path(pkg) / "DESCRIPTION").read_text(encoding="utf-8"),
+            re.MULTILINE,
+        )
     except OSError:
         m = None
     return "gb" if m and m.group(1).lower().startswith("en-gb") else "us"
@@ -153,14 +156,14 @@ def spelling_hits(text, target):
     text = _EXEMPT.sub(" ", text)
     for gb_rx, us_rx, us_form, gb_form in SPELLING:
         rx, want = (gb_rx, us_form) if target == "us" else (us_rx, gb_form)
-        for m in re.finditer(r"\b" + rx + r"\b", text, re.I):
+        for m in re.finditer(r"\b" + rx + r"\b", text, re.IGNORECASE):
             yield m.group(0), want
 
 
 def blocks(path):
     """Yield (start_line, lines, next_code_line) for each roxygen block."""
     cur, start = [], None
-    with open(path, encoding="utf-8", errors="replace") as fh:
+    with Path(path).open(encoding="utf-8", errors="replace") as fh:
         for i, line in enumerate(fh, 1):
             m = re.match(r"^\s*#'\s?(.*)$", line.rstrip("\n"))
             if m:
@@ -180,19 +183,19 @@ def blocks(path):
 
 def parse(start, lines):
     intro, tags, cur = [], [], None
-    for off, l in enumerate(lines):
-        m = TAG.match(l)
+    for off, text in enumerate(lines):
+        m = TAG.match(text)
         if m:
             cur = [m.group(1), m.group(2), start + off]
             tags.append(cur)
         elif cur is None:
-            intro.append((start + off, l))
+            intro.append((start + off, text))
         else:
-            cur[1] += "\n" + l
+            cur[1] += "\n" + text
     paras, buf = [], []
-    for ln, l in intro + [(None, "")]:
-        if l.strip():
-            buf.append((ln, l))
+    for ln, text in [*intro, (None, "")]:
+        if text.strip():
+            buf.append((ln, text))
         elif buf:
             paras.append((buf[0][0], " ".join(x.strip() for _, x in buf)))
             buf = []
@@ -211,7 +214,7 @@ def main():
     a = ap.parse_args()
     spelling = target_spelling(a.pkg, a.spelling)
     want = {int(x) for x in a.rules.split(",")}
-    files = sorted(glob.glob(os.path.join(a.pkg, "R", "*.R")))
+    files = sorted(Path(a.pkg, "R").glob("*.R"))
     if not files:
         sys.exit(f"no R/*.R files under {a.pkg}")
 
@@ -284,7 +287,7 @@ def main():
             for tag, x, ln in tags:
                 if tag != "param":
                     continue
-                m = re.match(r"([\w.,`\s]+?)\s+(.*)", x, re.S)
+                m = re.match(r"([\w.,`\s]+?)\s+(.*)", x, re.DOTALL)
                 if not m:
                     continue
                 name, d = m.group(1).strip(), " ".join(m.group(2).split())
@@ -297,24 +300,26 @@ def main():
 
             # Old-style links, and spelling in prose lines.
             cur_tag = None
-            for off, l in enumerate(lines):
-                if re.search(r"\\code\{\\link", l):
+            for off, raw in enumerate(lines):
+                text = raw
+                if re.search(r"\\code\{\\link", raw):
                     hit(f, start + off, 13, "use [fn()] instead of \\code{\\link{}}")
-                m = TAG.match(l)
+                m = TAG.match(raw)
                 if m:
                     cur_tag = m.group(1)
-                    l = m.group(2)
+                    text = m.group(2)
                 if cur_tag in _NOT_PROSE:
                     continue
                 if cur_tag == "param":
-                    l = re.sub(r"^[\w.,`]+\s*", "", l) if m else l
-                for word, fix in spelling_hits(l, spelling):
+                    text = re.sub(r"^[\w.,`]+\s*", "", text) if m else text
+                for word, fix in spelling_hits(text, spelling):
                     variety = "American" if spelling == "us" else "British"
                     hit(
                         f,
                         start + off,
                         18,
-                        f"{word!r}: use {variety} spelling ({fix}), or backtick it if it names code",
+                        f"{word!r}: use {variety} spelling ({fix}), "
+                        "or backtick it if it names code",
                     )
 
     for name, T in topics.items():

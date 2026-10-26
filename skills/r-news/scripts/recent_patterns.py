@@ -1,17 +1,25 @@
-import re, collections
+"""Sample recent NEWS bullets and count wording patterns (evidence for r-news).
 
-exec(open("audit.py").read().split("R=collections")[0])
+Run it in the directory that holds <pkg>.md files, as for audit_news.py.
+"""
+
+import collections
+import random
+import re
+from pathlib import Path
+
+from audit_news import PK, bullets, sections
+
 allb = []  # (pkg, heading, text)
 for p in PK:
-    secs = sections(open(p + ".md").read())
-    dev = bool(re.search("development version", secs[0][0], re.I))
+    secs = sections(Path(f"{p}.md").read_text())
+    dev = bool(re.search("development version", secs[0][0], re.IGNORECASE))
     take = secs[:2] if dev else secs[:1]
     # also include previous release when dev section is short
     if dev and len(bullets(secs[0][1])) < 8:
         take = secs[:3]
     for h, body in take:
-        for b in bullets(body):
-            allb.append((p, h, b["text"][2:].strip()))
+        allb.extend((p, h, b["text"][2:].strip()) for b in bullets(body))
 print("recent bullets", len(allb), collections.Counter(p for p, _, _ in allb))
 
 
@@ -21,13 +29,13 @@ def norm(t):
 
 op = collections.Counter()
 op2 = collections.Counter()
-for p, h, t in allb:
+for _, _, t in allb:
     w = norm(t).split()
     op[" ".join(w[:2])] += 1
 print("\nOPENERS (2 words):", op.most_common(25))
 # verbs following a leading `fn()`
 v = collections.Counter()
-for p, h, t in allb:
+for _, _, t in allb:
     m = re.match(
         r"^(?:In )?`[^`]+`(?: and `[^`]+`)*(?:, `[^`]+`)*(?:,? and `[^`]+`)? (\w+(?: \w+)?)", t
     )
@@ -94,10 +102,11 @@ for x in ph:
     n = sum(1 for _, _, t in allb if x in t.lower())
     print(f"  {x!r}: {n} ({100 * n // tot}%)")
 # reference formats
+REF = r"(?:@[\w-]+|#\d+|[\w-]+/[\w-]+#\d+)"
 fm = collections.Counter()
-for p, h, t in allb:
+for _, _, t in allb:
     m = re.search(
-        r"\(((?:@[\w-]+|#\d+|[\w-]+/[\w-]+#\d+)(?:(?:, | and | )(?:@[\w-]+|#\d+|[\w-]+/[\w-]+#\d+))*)\)\.?\s*$",
+        rf"\(({REF}(?:(?:, | and | ){REF})*)\)\.?\s*$",
         t,
     )
     if m:
@@ -108,7 +117,7 @@ for p, h, t in allb:
 print("\nREF FORMATS (U=@user I=#issue X=owner/repo#n):", fm.most_common(15))
 # link styles
 ls = collections.Counter()
-for p, h, t in allb:
+for _, _, t in allb:
     if re.search(r"\[`[^`]+`\]\(", t):
         ls["[`fn()`](url)"] += 1
     if re.search(r"\[[^\]`]+\]\(http", t):
@@ -129,7 +138,7 @@ for p, h, t in allb:
         ls["*italic*"] += 1
     if re.search(r"\bR (>=|\d)", t):
         ls["R version"] += 1
-    if re.search(r"edition|breaking", t, re.I):
+    if re.search(r"edition|breaking", t, re.IGNORECASE):
         ls["edition/breaking word"] += 1
 print("LINK/FORMAT:", dict(ls))
 # internal/dev-facing language
@@ -149,9 +158,7 @@ for k in [
 ]:
     n = sum(1 for _, _, t in allb if k.lower() in t.lower())
     print(" ", k, n)
-import random
-
 random.seed(7)
 print("\nSAMPLES")
-for p, h, t in random.sample(allb, 45):
+for p, _, t in random.sample(allb, 45):
     print(f"[{p}]", t[:230])
