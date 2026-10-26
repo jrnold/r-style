@@ -1,10 +1,10 @@
 {
-  "name": "roxygen-style",
+  "name": "r-style",
   "version": "0.1.0",
-  "description": "Wording and style rules for roxygen2 documentation in R packages, with a heuristic checker.",
+  "description": "Style rules for R packages: roxygen2 documentation wording (with a heuristic checker) and judgment-based code review rules, and NEWS.md conventions, from the tidyverse guides.",
   "author": { "name": "Jeffrey Arnold" },
-  "homepage": "https://github.com/jrnold/roxygen-style",
-  "repository": "https://github.com/jrnold/roxygen-style",
+  "homepage": "https://github.com/jrnold/r-style",
+  "repository": "https://github.com/jrnold/r-style",
   "license": "MIT",
-  "keywords": ["r", "roxygen2", "documentation", "style", "tidyverse"]
+  "keywords": ["r", "roxygen2", "documentation", "style", "tidyverse", "code-review", "news"]
 }

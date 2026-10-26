@@ -1,6 +1,7 @@
-# roxygen-style
+# r-style
 
-A [Claude Code](https://claude.com/claude-code) plugin with wording and style
+A [Claude Code](https://claude.com/claude-code) plugin with style rules for R
+packages. Its `roxygen-style` skill covers wording and style
 rules for roxygen2 documentation in R packages: titles, `@param`, `@returns`,
 prose, and structure. The rules come from an audit of 12 tidyverse and r-lib
 packages and from maintainer review comments; see
@@ -9,11 +10,24 @@ packages and from maintainer review comments; see
 It complements the `r-lib` skills: `r-package-development` covers workflow and
 `cran-extrachecks` covers CRAN requirements. This plugin covers prose style.
 
+## Skills
+
+- `roxygen-style`: wording and style of roxygen2 documentation.
+- `r-news`: what earns a `NEWS.md` bullet, heading structure, bullet wording,
+  ordering, breaking changes, deprecations, and release checks, with the
+  tidyverse style guide as the standard and an audit of 1,048 bullets from 12
+  tidyverse and r-lib packages as supporting evidence.
+- `r-code-style`: review rules for R code that `air`, `styler`, and `lintr`
+  cannot check (naming, comments, pipes, function and argument design, error
+  messages, test names). Drawn from the
+  [tidyverse style guide](https://style.tidyverse.org/) and
+  [tidy design principles](https://design.tidyverse.org/).
+
 ## Install
 
 ```
-/plugin marketplace add jrnold/roxygen-style
-/plugin install roxygen-style@roxygen-style
+/plugin marketplace add jrnold/r-style
+/plugin install r-style@r-style
 ```
 
 ## Checker

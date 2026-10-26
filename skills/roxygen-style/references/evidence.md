@@ -10,23 +10,23 @@ Collected 2026-10-04. Two sources:
 
 ## Corpus measurements
 
-| Measure | Overall | Range across packages |
-|---|---|---|
-| Title ends with `.` | 1% | 0–6% |
-| Title in Title Case | 2% | 0–5% |
-| Title first word third-person (-s) | 4% | 0–11% |
-| Title > 65 chars | 2% | 0–14% |
-| `@param` starts capital/backtick | 89% | 65% (scales), 72% (ggplot2) – 100% |
-| `@param` ends with `.` | 86% | 59% (scales) – 97% |
-| `@param` starts "A/An" | 21% | 2–53% |
-| `@param` mentions a default | 20% | 8–32% |
-| `@return(s)` ends with `.` | 94% | 56–100% |
-| `@return(s)` starts "A/An" | 50% | 14–80% |
-| `@returns` share of return tags | 10% | 0–33% |
-| Exported topics with `@return(s)` | ~18% median | 5% (tidyr) – 67% (stringr) |
-| Uses `[fn()]` links | 15% of blocks | — |
-| Uses `\code{\link{}}` | 0% | — |
-| Uses "you" / "we" | 8% / 1% | — |
+  | Measure                            | Overall       | Range across packages              |
+  | ---------------------------------- | ------------- | ---------------------------------- |
+  | Title ends with `.`                | 1%            | 0–6%                               |
+  | Title in Title Case                | 2%            | 0–5%                               |
+  | Title first word third-person (-s) | 4%            | 0–11%                              |
+  | Title > 65 chars                   | 2%            | 0–14%                              |
+  | `@param` starts capital/backtick   | 89%           | 65% (scales), 72% (ggplot2) – 100% |
+  | `@param` ends with `.`             | 86%           | 59% (scales) – 97%                 |
+  | `@param` starts "A/An"             | 21%           | 2–53%                              |
+  | `@param` mentions a default        | 20%           | 8–32%                              |
+  | `@return(s)` ends with `.`         | 94%           | 56–100%                            |
+  | `@return(s)` starts "A/An"         | 50%           | 14–80%                             |
+  | `@returns` share of return tags    | 10%           | 0–33%                              |
+  | Exported topics with `@return(s)`  | ~18% median   | 5% (tidyr) – 67% (stringr)         |
+  | Uses `[fn()]` links                | 15% of blocks | —                                  |
+  | Uses `\code{\link{}}`              | 0%            | —                                  |
+  | Uses "you" / "we"                  | 8% / 1%       | —                                  |
 
 Default phrasing counts: "The default" 106, "By default," 90, "(default)" 71,
 "Defaults to" 58, ", the default," 54, "(the default)" 52.
