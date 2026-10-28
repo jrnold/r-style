@@ -26,7 +26,7 @@ It complements the `r-lib` skills: `r-package-development` covers workflow and
 ## Install
 
 ```
-/plugin marketplace add jrnold/r-style
+/plugin marketplace add jrnold/r-style-plugin
 /plugin install r-style@r-style
 ```
 
