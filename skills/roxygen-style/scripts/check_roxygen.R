@@ -305,107 +305,101 @@ check_lines <- function(tag, spelling, hit) {
   }
 }
 
-check_roxygen <- function(
-  pkg,
-  rules = c(1, 2, 3, 4, 10, 13, 18),
-  spelling = NULL
-) {
+read_blocks <- function(f) {
+  tryCatch(
+    roxygen2::parse_file(f, env = NULL),
+    error = function(e) {
+      message(sprintf("%s: skipped, roxygen2 can't parse it: %s", f, conditionMessage(e)))
+      list()
+    }
+  )
+}
+
+# Whether a block creates a help topic; a bare `@export` block (S3 method,
+# re-export) and a `@noRd` block don't.
+makes_topic <- function(tag_names) {
+  !"noRd" %in% tag_names && any(c("title", "rdname", "describeIn", "name") %in% tag_names)
+}
+
+# Record what rule 10 needs about the topic a block documents.
+add_topic <- function(topics, block, f) {
+  tags <- block$tags
+  tag_names <- vapply(tags, `[[`, "", "tag")
+  value <- function(name) {
+    if (name %in% tag_names) trimws(tags[[match(name, tag_names)]]$raw)
+  }
+  start <- min(vapply(tags, `[[`, 0, "line"))
+  topic <- value("rdname") %||%
+    value("name") %||%
+    function_name(block$call) %||%
+    paste0(f, ":", start)
+
+  t <- topics[[topic]] %||% list(export = NULL, returns = FALSE, data = FALSE)
+  if ("export" %in% tag_names && is.null(t$export)) {
+    t$export <- list(file = f, line = start)
+  }
+  if (any(c("returns", "return", "inherit") %in% tag_names)) {
+    t$returns <- TRUE
+  }
+  is_data <- "format" %in%
+    tag_names ||
+    isTRUE(value("docType") %in% c("data", "package")) ||
+    is.character(block$call)
+  if (is_data) {
+    t$data <- TRUE
+  }
+  topics[[topic]] <- t
+  topics
+}
+
+check_block <- function(block, spelling, hit) {
+  for (tag in block$tags) {
+    if (tag$tag == "title") {
+      check_title(tag, hit)
+    }
+    if (tag$tag == "param") {
+      check_param(tag, hit)
+    }
+    check_lines(tag, spelling, hit)
+  }
+}
+
+# Rule 10 findings: exported topics, other than data, with no @returns.
+missing_returns <- function(topics) {
+  missing <- Filter(function(t) !is.null(t$export) && !t$returns && !t$data, topics)
+  data.frame(
+    file = vapply(missing, function(t) t$export$file, ""),
+    line = vapply(missing, function(t) t$export$line, 0),
+    rule = rep(10, length(missing)),
+    msg = sprintf("exported topic '%s' has no @returns", names(missing)),
+    stringsAsFactors = FALSE
+  )
+}
+
+check_roxygen <- function(pkg, rules = c(1, 2, 3, 4, 10, 13, 18), spelling = NULL) {
   spelling <- target_spelling(pkg, spelling)
-  files <- sort(list.files(
-    file.path(pkg, "R"),
-    pattern = "\\.[Rr]$",
-    full.names = TRUE
-  ))
+  files <- sort(list.files(file.path(pkg, "R"), pattern = "\\.[Rr]$", full.names = TRUE))
   if (length(files) == 0) {
     stop(sprintf("No R/*.R files under %s.", pkg), call. = FALSE)
   }
 
-  out <- data.frame(
-    file = character(),
-    line = integer(),
-    rule = integer(),
-    msg = character()
-  )
+  found <- new.env()
+  found$hits <- list()
   topics <- list()
-
   for (f in files) {
     hit <- function(ln, rule, msg) {
-      if (rule %in% rules) {
-        out[nrow(out) + 1, ] <<- list(f, ln, rule, msg)
-      }
+      found$hits[[length(found$hits) + 1]] <- list(file = f, line = ln, rule = rule, msg = msg)
     }
-    blocks <- tryCatch(
-      roxygen2::parse_file(f, env = NULL),
-      error = function(e) {
-        message(sprintf(
-          "%s: skipped, roxygen2 can't parse it: %s",
-          f,
-          conditionMessage(e)
-        ))
-        list()
-      }
-    )
-    for (block in blocks) {
-      tags <- block$tags
-      tag_names <- vapply(tags, `[[`, "", "tag")
-      if ("noRd" %in% tag_names) {
-        next
-      }
-      # A bare `@export` block (S3 method, re-export) creates no help topic.
-      if (!any(c("title", "rdname", "describeIn", "name") %in% tag_names)) {
-        next
-      }
-      value <- function(name) {
-        if (name %in% tag_names) trimws(tags[[match(name, tag_names)]]$raw)
-      }
-      start <- min(vapply(tags, `[[`, 0, "line"))
-      topic <- value("rdname") %||%
-        value("name") %||%
-        function_name(block$call) %||%
-        paste0(f, ":", start)
-
-      t <- topics[[topic]] %||%
-        list(export = NULL, returns = FALSE, data = FALSE)
-      if ("export" %in% tag_names && is.null(t$export)) {
-        t$export <- list(file = f, line = start)
-      }
-      if (any(c("returns", "return", "inherit") %in% tag_names)) {
-        t$returns <- TRUE
-      }
-      if (
-        "format" %in%
-          tag_names ||
-          isTRUE(value("docType") %in% c("data", "package")) ||
-          is.character(block$call)
-      ) {
-        t$data <- TRUE
-      }
-      topics[[topic]] <- t
-
-      if ("title" %in% tag_names) {
-        check_title(tags[[match("title", tag_names)]], hit)
-      }
-      for (tag in tags) {
-        if (tag$tag == "param") {
-          check_param(tag, hit)
-        }
-        check_lines(tag, spelling, hit)
+    for (block in read_blocks(f)) {
+      if (makes_topic(vapply(block$tags, `[[`, "", "tag"))) {
+        topics <- add_topic(topics, block, f)
+        check_block(block, spelling, hit)
       }
     }
   }
+  out <- do.call(rbind, c(lapply(found$hits, as.data.frame), list(missing_returns(topics))))
 
-  for (name in names(topics)) {
-    t <- topics[[name]]
-    if (!is.null(t$export) && !t$returns && !t$data && 10 %in% rules) {
-      out[nrow(out) + 1, ] <- list(
-        t$export$file,
-        t$export$line,
-        10,
-        sprintf("exported topic '%s' has no @returns", name)
-      )
-    }
-  }
-
+  out <- out[out$rule %in% rules, ]
   out <- out[order(out$file, out$line), ]
   sprintf("%s:%d: rule %d: %s", out$file, out$line, out$rule, out$msg)
 }
@@ -425,9 +419,8 @@ main <- function(args) {
   if (length(pkg) != 1) {
     stop(usage, call. = FALSE)
   }
-  rules <- as.integer(strsplit(opt("--rules") %||% "1,2,3,4,10,13,18", ",")[[
-    1
-  ]])
+  rules <- opt("--rules") %||% "1,2,3,4,10,13,18"
+  rules <- as.integer(strsplit(rules, ",", fixed = TRUE)[[1]])
   spelling <- opt("--spelling")
   if (!is.null(spelling) && !spelling %in% c("us", "gb")) {
     stop("`--spelling` must be \"us\" or \"gb\".", call. = FALSE)

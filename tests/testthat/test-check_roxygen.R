@@ -23,8 +23,8 @@ test_that("flags a title longer than 65 characters", {
 })
 
 test_that("flags @param text that isn't a sentence", {
-  expect_length(grep("@param x: should start with a capital", hits_for(4)), 1)
-  expect_length(grep("@param w: should end with a full stop", hits_for(4)), 1)
+  expect_length(grep("@param x: should start with a capital", hits_for(4), fixed = TRUE), 1)
+  expect_length(grep("@param w: should end with a full stop", hits_for(4), fixed = TRUE), 1)
 })
 
 test_that("flags exported topics with no @returns, not data or S3 methods", {
