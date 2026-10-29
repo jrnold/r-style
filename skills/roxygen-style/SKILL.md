@@ -109,11 +109,11 @@ Run the checker (in this skill's `scripts/` directory) against a package to
 flag mechanical violations (rules 1, 2, 3, 4, 10, 13, 18):
 
 ```bash
-python3 <skill-dir>/scripts/check_roxygen.py path/to/pkg
+Rscript <skill-dir>/scripts/check_roxygen.R path/to/pkg
 ```
 
-It prints `file:line: rule: message`. It is heuristic — read each hit before
-changing anything, and report findings before editing when the user asked for
-an audit. Rule 18 flags British spellings (or American ones, if DESCRIPTION
-has `Language: en-GB`; override with `--spelling us|gb`). It checks roxygen only — also grep vignettes
-and README by hand. Rules 5–9, 12, 14–17, 19–20 need human judgement.
+It needs roxygen2 and prints `file:line: rule N: message`. It is heuristic —
+read each hit before changing anything, and report findings before editing
+when the user asked for an audit. Rule 18 flags British spellings (or American
+ones, if DESCRIPTION has `Language: en-GB`; override with `--spelling us|gb`).
+It checks roxygen only — also grep vignettes and README by hand. Rules 5–9, 12, 14–17, 19–20 need human judgement.

@@ -23,3 +23,7 @@ hook id:
 # Run the plugin eval suite (with and without the plugin), e.g. `just eval --tag r-news`
 eval *args:
     claude plugin eval . --no-publish {{args}}
+
+# Run the R tests (the roxygen checker)
+test:
+    Rscript -e 'testthat::test_dir("tests/testthat")'

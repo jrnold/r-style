@@ -32,16 +32,21 @@ It complements the `r-lib` skills: `r-package-development` covers workflow and
 
 ## Checker
 
-`skills/roxygen-style/scripts/check_roxygen.py` flags mechanical violations
+`skills/roxygen-style/scripts/check_roxygen.R` flags mechanical violations
 (title case, third-person titles, `@param` capitalization and full stops,
 missing `@returns`, `\code{\link{}}`, mixed spelling varieties):
 
 ```bash
-python3 skills/roxygen-style/scripts/check_roxygen.py path/to/pkg
+Rscript skills/roxygen-style/scripts/check_roxygen.R path/to/pkg
 ```
 
-It is heuristic, so review each hit before you change anything. It needs only
-the Python 3 standard library.
+It parses blocks with roxygen2, but its rule checks are heuristic, so review
+each hit before you change anything. It needs R 4.4 or later and roxygen2.
+Its tests use testthat:
+
+```bash
+just test
+```
 
 ## Evals
 

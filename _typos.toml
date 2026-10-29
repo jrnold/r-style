@@ -19,7 +19,7 @@ extend-ignore-re = [
 ]
 
 [default.extend-words]
-# Regex alternation in check_roxygen.py (colour|ful|less), not a typo.
+# Regex alternation in check_roxygen.R (colour|ful|less), not a typo.
 ful = "ful"
 # Writing R Extensions, abbreviated in the evidence notes.
 WRE = "WRE"
