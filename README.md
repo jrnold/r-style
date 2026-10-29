@@ -43,6 +43,23 @@ python3 skills/roxygen-style/scripts/check_roxygen.py path/to/pkg
 It is heuristic, so review each hit before you change anything. It needs only
 the Python 3 standard library.
 
+## Evals
+
+`evals/` holds a `claude plugin eval` suite:
+two cases per skill (one review, one writing task) and one negative case that
+checks no skill fires on a Python task. Each case gives an R snippet or
+`NEWS.md` with seeded rule violations. LLM graders check that the response
+catches them, and a `tool_used` grader checks that the right skill fired.
+
+```bash
+just eval                          # every case, with and without the plugin
+just eval --tag r-news --runs 1    # one skill, one run per case
+```
+
+Each run is a full Claude session on your account, so the full suite (7 cases,
+3 runs, 2 arms) costs a few dollars. Results go to `evals/results/`, which git
+ignores.
+
 ## License
 
 MIT

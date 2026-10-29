@@ -19,3 +19,7 @@ fix:
 # Run one hook on every file, e.g. `just hook ruff-check`
 hook id:
     prek run {{id}} --all-files
+
+# Run the plugin eval suite (with and without the plugin), e.g. `just eval --tag r-news`
+eval *args:
+    claude plugin eval . --no-publish {{args}}
