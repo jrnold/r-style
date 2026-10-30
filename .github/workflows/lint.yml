@@ -21,11 +21,18 @@ jobs:
       # Hooks whose tools CI doesn't install (R, Lean, Lua, macOS, OpenTofu, shells, Node
       # projects); they run locally. A repo that needs one in CI adds a setup step and drops it
       # from this list.
-      SKIP: no-commit-to-branch,lintr,lake-build,luacheck,plutil,claude-plugin-validate,zsh-syntax,fish-syntax,fish-indent,typstyle,tofu-fmt,tflint,trivy-config,tsc,eslint-astro
+      SKIP: no-commit-to-branch,lake-build,luacheck,plutil,claude-plugin-validate,zsh-syntax,fish-syntax,fish-indent,typstyle,tofu-fmt,tflint,trivy-config,tsc,eslint-astro
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
+      # lintr runs in CI: it needs R and the lintr and cyclocomp packages.
+      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05  # v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05  # v2
+        with:
+          packages: any::lintr, any::cyclocomp
       - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
         with:
           enable-cache: false
