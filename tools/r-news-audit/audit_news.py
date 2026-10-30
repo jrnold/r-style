@@ -28,13 +28,14 @@ PK = [
 NREL = 8
 
 
-def sections(txt):
+def sections(txt: str) -> list[tuple[str, str]]:
+    """Split a NEWS.md file into (level-1 heading, body) pairs."""
     parts = re.split(r"(?m)^# (.*)$", txt)
     return [(parts[i], parts[i + 1]) for i in range(1, len(parts), 2)]
 
 
-def bullets(body):
-    # top-level bullets: lines starting "- " or "* " at col 0, with continuation lines
+def bullets(body: str) -> list[dict[str, Any]]:
+    """Parse the top-level bullets of a NEWS section, with their continuation lines."""
     out: list[dict[str, Any]] = []
     cur: dict[str, Any] | None = None
     blank = False
@@ -68,11 +69,14 @@ def bullets(body):
     return out
 
 
-def pct(c, b, k, d=None):
-    return round(100 * c[k] / (d or b)) if (d or b) else 0
+def pct(c: collections.Counter[str], b: int, k: str, d: int | None = None) -> int:
+    """Return `c[k]` as a whole percentage of `d`, or of `b` when `d` is not given."""
+    denom = b if d is None or d == 0 else d
+    return round(100 * c[k] / denom) if denom else 0
 
 
-def main():
+def main() -> None:
+    """Print the NEWS.md convention counts for each package in `PK`."""
     R = collections.defaultdict(collections.Counter)
     for p in PK:
         txt = Path(f"{p}.md").read_text()

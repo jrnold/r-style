@@ -7,7 +7,7 @@ Collected 2026-10-05. Three sources:
    vctrs, cli (r-lib), the same 12 packages as the roxygen-style audit. Only
    the development section (if present) and the 8 most recent releases of each
    were measured: 107 sections, 1,048 top-level bullets. Reproduce with
-   `scripts/audit_news.py` (see its header).
+   `tools/r-news-audit/audit_news.py` in the plugin repository (see its header).
 2. **Posit skills** (`posit-dev/skills`, local marketplace checkout).
 3. **Published guidance**: tidyverse style guide, *R Packages*, pkgdown docs,
    CRAN policy.
@@ -97,7 +97,8 @@ maintainers.
 Sample: the development section plus the latest release of each package
 (three sections where the development one was short): 197 bullets, mostly
 dplyr 44, scales 34, ggplot2 31. Heuristic, small counts. Script:
-`scripts/recent_patterns.py` (run after `audit_news.py` setup).
+`tools/r-news-audit/recent_patterns.py` in the plugin repository (run after
+`audit_news.py` setup).
 
   | Pattern                                             | Count (of 197)             |
   | --------------------------------------------------- | -------------------------- |

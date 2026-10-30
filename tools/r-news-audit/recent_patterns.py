@@ -23,7 +23,8 @@ for p in PK:
 print("recent bullets", len(allb), collections.Counter(p for p, _, _ in allb))
 
 
-def norm(t):
+def norm(t: str) -> str:
+    """Replace backticked code with a placeholder so openers group together."""
     return re.sub(r"`[^`]*`", "FN", t)
 
 
