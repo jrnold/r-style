@@ -100,29 +100,39 @@ Use `cli` (`r-lib:cli`). The wording rules:
 
 ## Arguments and dots
 
-33. **Dot-prefix the named arguments of a function whose `...` takes
-    user-named inputs** (`.x`, `.f`, `.by`), so a user's name can't partially
-    match or collide with them.
-34. **Check `...` is used.** When `...` exists for methods or future
-    extension, call `rlang::check_dots_empty()`, `check_dots_used()`, or
-    `check_dots_unnamed()`, so a misspelled argument errors instead of
-    vanishing.
-35. **Mutually exclusive arguments** both default to `NULL` and are checked
-    with `rlang::check_exclusive()`. Don't let one silently win.
+33. **Dot-prefix the named arguments of a function whose `...` creates data
+    or is passed to a user-supplied function** (`map(.x, .f, ...)`,
+    `filter(.data, ..., .by)`), so a user's name is less likely to match the
+    wrong argument. Not needed when the names in `...` are ignored (`cat()`).
+34. **Check `...` is used.** In an S3 generic whose methods add arguments, or
+    a wrapper that passes `...` on, call `rlang::check_dots_used()` (before
+    `UseMethod()` in a generic), so a misspelled argument errors instead of
+    vanishing. Methods don't repeat it. Skip it when `...` is captured with
+    `enquos()` or `match.call()`; use a warning when the function has side
+    effects. When `...` only forces later arguments to be named, use
+    `rlang::check_dots_empty()`.
+35. **Mutually exclusive arguments** are checked with
+    `rlang::check_exclusive()`; branch on the name it returns. Don't let one
+    silently win. It tests which arguments were supplied, not which are
+    `NULL`, so an explicit `NULL` counts as supplied.
 36. **Reuse the ecosystem's argument names and meanings** (`na.rm`, `.by`,
     `.keep`, `names_to`) instead of synonyms. A family of functions shares a
     prefix (`str_`), so autocomplete finds the family.
 37. **Vectorised arguments recycle by tidyverse rules:** length 1 or the
     common size; any other length is an error. Where vctrs is a dependency,
-    use `vec_size()` and `vec_recycle_common()`, not `length()` and `rep()`.
+    use `vec_size_common()` and `vec_recycle_common()`, not `length()` and
+    `rep()`.
 
 ## Input checking
 
-38. **Check inputs with the rlang standalone helpers**
-    (`usethis::use_standalone("r-lib/rlang", "types-check")`: `check_string()`,
-    `check_bool()`, `check_number_whole()`, ...) instead of hand-rolled
-    `if (!is.character(x)) stop()`. They give rule 25 wording for free. Don't
-    edit `import-standalone-*.R` files; update them with `use_standalone()`.
+38. **Check inputs with rlang's checkers** instead of hand-rolled
+    `if (!is.character(x)) stop()`: `check_string()`, `check_bool()`,
+    `check_number_whole()`, `check_number_decimal()`, and
+    `check_data_frame()` are exported from rlang 1.2.0. The others
+    (`check_character()`, `check_logical()`, `check_function()`, ...) come
+    from `usethis::use_standalone("r-lib/rlang", "types-check")`; update that
+    file with `use_standalone()`, don't edit it. They give rule 25 wording
+    for free.
 
 ## Idioms
 
