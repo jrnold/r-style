@@ -4,13 +4,13 @@
     "name": "Jeffrey Arnold"
   },
   "metadata": {
-    "description": "Roxygen2 documentation style, code review, and NEWS.md rules for R packages."
+    "description": "Roxygen2 documentation style, code review, package structure, and NEWS.md rules for R packages."
   },
   "plugins": [
     {
       "name": "r-style",
       "source": "./",
-      "description": "Style rules for R packages: roxygen2 documentation wording (with a heuristic checker) and judgment-based code review rules, and NEWS.md conventions, from the tidyverse guides."
+      "description": "Style rules for R packages from the tidyverse guides: roxygen2 documentation wording (with a heuristic checker), code review rules, package structure rules, and NEWS.md conventions, each with sourced evidence."
     }
   ]
 }

@@ -24,6 +24,11 @@ hook id:
 eval *args:
     claude plugin eval . --no-publish {{args}}
 
-# Run the R tests (the roxygen checker)
+# Run the R tests (the roxygen checker) and the Python tests (the upstream checker)
 test:
     Rscript -e 'testthat::test_dir("tests/testthat")'
+    uv run pytest
+
+# Check the rules' sources for upstream changes and stale quotes
+check-upstream *args:
+    uv run python tools/check-upstream/check_upstream.py {{args}}

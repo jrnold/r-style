@@ -9,6 +9,14 @@ Please review this PR to my R package tidyfoo before I merge it. The package
 is at version 0.4.0.9000. Here is the full diff:
 
 ```diff
+diff --git a/DESCRIPTION b/DESCRIPTION
+--- a/DESCRIPTION
++++ b/DESCRIPTION
+@@ -12,6 +12,7 @@ Imports:
+     cli,
+     rlang (>= 1.1.0),
++    ggplot2,
+     vctrs
 diff --git a/R/count.R b/R/count.R
 new file mode 100644
 --- /dev/null

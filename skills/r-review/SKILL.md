@@ -1,17 +1,18 @@
 ---
 name: r-review
-description: Review a change to an R package as a whole - code, roxygen documentation, and NEWS.md - in one report, inline or with one reviewer agent per aspect. Use when asked to review an R package PR, branch, diff, or commit, or to check a change is ready to merge or release. Coordinates r-code-style (code), roxygen-style (documentation prose), and r-news (NEWS.md); for a question about only one of those, use that skill directly.
+description: Review a change to an R package as a whole - code, package structure, roxygen documentation, and NEWS.md - in one report, inline or with one reviewer agent per aspect. Use when asked to review an R package PR, branch, diff, or commit, or to check a change is ready to merge or release. Coordinates r-code-style (code), r-pkg-structure (dependencies, tidy eval, classes, load hooks, upkeep), roxygen-style (documentation prose), and r-news (NEWS.md); for a question about only one of those, use that skill directly.
 ---
 
 # Review an R package change
 
-One review of a change, drawing on three rule sets:
+One review of a change, drawing on four rule sets:
 
-  | Aspect  | Skill                   | Agent                      | Rule prefix |
-  | ------- | ----------------------- | -------------------------- | ----------- |
-  | Code    | `r-style:r-code-style`  | `r-style:r-code-reviewer`  | `code:`     |
-  | Roxygen | `r-style:roxygen-style` | `r-style:roxygen-reviewer` | `roxygen:`  |
-  | NEWS    | `r-style:r-news`        | `r-style:news-reviewer`    | `news:`     |
+  | Aspect  | Skill                     | Agent                      | Rule prefix |
+  | ------- | ------------------------- | -------------------------- | ----------- |
+  | Code    | `r-style:r-code-style`    | `r-style:r-code-reviewer`  | `code:`     |
+  | Package | `r-style:r-pkg-structure` | `r-style:pkg-reviewer`     | `pkg:`      |
+  | Roxygen | `r-style:roxygen-style`   | `r-style:roxygen-reviewer` | `roxygen:`  |
+  | NEWS    | `r-style:r-news`          | `r-style:news-reviewer`    | `news:`     |
 
 The skills hold the rules; this skill decides which apply, runs them, and
 merges the results. It reports and does not edit, unless the user asks for
@@ -30,13 +31,14 @@ only the hunk, when the hunk alone can't show the problem.
 
 ## 2. Scope the aspects
 
-  | The change touches                                  | Aspects            |
-  | --------------------------------------------------- | ------------------ |
-  | Code in `R/`                                        | code               |
-  | `#'` lines, or adds or changes an exported function | roxygen            |
-  | Anything a user can see, or `NEWS.md` itself        | NEWS               |
-  | `tests/`                                            | code (rules 31-32) |
-  | Only CI, `.Rbuildignore`, or internal refactors     | code only; no NEWS |
+  | The change touches                                                                             | Aspects                                   |
+  | ---------------------------------------------------------------------------------------------- | ----------------------------------------- |
+  | Code in `R/`                                                                                   | code                                      |
+  | `#'` lines, or adds or changes an exported function                                            | roxygen                                   |
+  | Anything a user can see, or `NEWS.md` itself                                                   | NEWS                                      |
+  | `tests/`                                                                                       | code (rules 31-32)                        |
+  | `DESCRIPTION`, `NAMESPACE`, `@importFrom`, `.onLoad()`, dplyr or ggplot2 calls, or an S3 class | package                                   |
+  | Only CI, `.Rbuildignore`, or internal refactors                                                | code, and package rule 12 for CI; no NEWS |
 
 NEWS is in scope whenever behavior changes, even when `NEWS.md` is not in the
 diff: a missing bullet is the most common NEWS finding.
@@ -71,6 +73,10 @@ Do these yourself in either mode, because they need the whole change:
   replacement (`news:19`), and the version in `deprecate_*()` matches the
   NEWS heading it will ship under (`news:20`).
 - **Removed export or argument:** flag it (`code:23`).
+- **New dependency:** weigh it (`pkg:1`) and check how it's called
+  (`pkg:2`, `pkg:3`).
+- **Refactor mixed with a behavior change:** suggest splitting it into two
+  PRs; small cleanups next to the change are fine.
 
 ## 5. Merge and report
 
@@ -82,8 +88,16 @@ Do these yourself in either mode, because they need the whole change:
    `R/fit.R:12: [code:25] Error says "should"; use "must" and name the type received.`
    The prefix matters: each skill numbers its rules from 1.
 4. Open with a one-line verdict: ready to merge, or what blocks it. Then
-   group the findings under **Must fix**, **Should fix**, and **Consider**.
+   group the findings by the tidyverse code-review labels: **Required**,
+   **Optional**, and **Nit**, plus **FYI** for ideas outside this PR. Rule
+   `pkg:12` (upkeep) is never Required.
+5. Comment on the code, never the author, and say why a change matters when
+   the rule alone doesn't make it obvious.
 
 Follow the skills' review limits: don't churn correct code or prose over
 taste, and raise API rules (`code:14`-`23`, `code:33`-`37`) only for new or
 changed exports.
+
+The labels, courtesy, and split-refactor advice come from the
+[tidyverse code review guide](https://code-review.tidyverse.org/) (reviewer
+comments, sections 5.1, 5.2, 5.5; focused PRs, section 8.3).

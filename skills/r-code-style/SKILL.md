@@ -8,17 +8,21 @@ description: Judgment-based review rules for R package code from the tidyverse s
 Rules for reviewing R code *after* `air`/`styler` and `lintr` have run. Do not
 report whitespace, line length, `<-` versus `=`, or name casing; the tools own
 those. Sources: [tidyverse style guide](https://style.tidyverse.org/) and
-[tidy design principles](https://design.tidyverse.org/). Where the project
-sets its own line length or conventions, the project wins.
+[tidy design principles](https://design.tidyverse.org/); the source for each
+rule is in [references/evidence.md](references/evidence.md). Rules marked †
+are house rules with no published tidyverse source. Where the project sets its
+own line length or conventions, the project wins.
 
-For documentation prose see `roxygen-style`; for `cli` error mechanics see
-`r-lib:cli`; for deprecation staging see `r-lib:lifecycle`.
+For documentation prose see `roxygen-style`; for dependencies, tidy eval in
+packages, classes, and load hooks see `r-pkg-structure`; for `cli` error
+mechanics see `r-lib:cli`; for deprecation staging see `r-lib:lifecycle`.
 
 ## Names and structure
 
 1. **Functions are verbs, variables are nouns.** Concise but meaningful.
 2. **No dots in new function or class names** outside S3 methods.
-3. **Don't shadow** base, stats, or ggplot2 functions with variables.
+3. **Don't reuse the names of common functions and variables** (`c`, `T`,
+   `mean`, `df`).
 4. **Don't encode data in names** (`model_2018`, `model_2019`). Use a list or
    data frame.
 5. **No assignment inside calls**, except to capture a side effect.
@@ -34,7 +38,8 @@ For documentation prose see `roxygen-style`; for `cli` error mechanics see
 9. **Explain why**, not what or how: a decision, a surprising finding, a
    source. A comment that restates the code should be deleted, or the code
    renamed so it isn't needed.
-10. **Long explanations belong in a vignette or Rmd**, not a comment block.
+10. **When comments outnumber code, move the explanation** to a vignette or
+    R Markdown document.
 
 ## Pipes
 
@@ -84,7 +89,7 @@ Use `cli` (`r-lib:cli`). The wording rules:
 27. **Hints go last** as `ℹ` bullets ending in a question mark
     (``Did you mean `Species == "setosa"`?``), and only when the cause and fix
     are clear and common.
-28. **Don't blame an argument or speculate** about a cause you haven't
+28. † **Don't blame an argument or speculate** about a cause you haven't
     verified.
 29. **List at most five problems**, then say how many more there are.
 
@@ -115,9 +120,12 @@ Use `cli` (`r-lib:cli`). The wording rules:
     `rlang::check_exclusive()`; branch on the name it returns. Don't let one
     silently win. It tests which arguments were supplied, not which are
     `NULL`, so an explicit `NULL` counts as supplied.
-36. **Reuse the ecosystem's argument names and meanings** (`na.rm`, `.by`,
-    `.keep`, `names_to`) instead of synonyms. A family of functions shares a
-    prefix (`str_`), so autocomplete finds the family.
+36. **Use names users already know.** Keep argument names consistent within
+    the package and with the packages it sits beside (`x` for the primary
+    vector, `data` for a data frame, `pattern` for a regex); avoid names that
+    differ between US and UK English. Group a family of functions with a
+    shared prefix (`str_`), and use suffixes for variations (`map_int()`,
+    `map_dbl()`).
 37. **Vectorised arguments recycle by tidyverse rules:** length 1 or the
     common size; any other length is an error. Where vctrs is a dependency,
     use `vec_size_common()` and `vec_recycle_common()`, not `length()` and

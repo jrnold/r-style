@@ -1,4 +1,4 @@
-# Tests for the roxygen checker (testthat).
+# Tests for the roxygen checker (testthat) and the upstream checker (pytest).
 name: test
 
 on:
@@ -29,3 +29,16 @@ jobs:
           packages: any::roxygen2, any::testthat
       - name: Run tests
         run: Rscript -e 'testthat::test_dir("tests/testthat", stop_on_failure = TRUE)'
+
+  pytest:
+    name: pytest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
+      - name: Run tests
+        run: uv run pytest

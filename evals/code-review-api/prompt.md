@@ -38,4 +38,14 @@ print.group_summary <- function(x, digits = 3, ...) {
   cat(format(unclass(x), digits = digits), sep = "\n")
   invisible(x)
 }
+
+#' @export
+top_groups <- function(x, ...) {
+  UseMethod("top_groups")
+}
+
+#' @export
+top_groups.group_summary <- function(x, n = 5, decreasing = TRUE, ...) {
+  head(sort(x, decreasing = decreasing), n)
+}
 ```
