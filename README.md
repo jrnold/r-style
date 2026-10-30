@@ -23,8 +23,8 @@ It complements the `r-lib` skills: `r-package-development` covers workflow and
   tidyverse style guide as the standard and an audit of 1,048 bullets from 12
   tidyverse and r-lib packages as supporting evidence.
 - `r-code-style`: review rules for R code that `air`, `styler`, and `lintr`
-  cannot check (naming, comments, pipes, function and argument design, error
-  messages, test names). Drawn from the
+  cannot check (naming, comments, pipes, function and argument design, dots,
+  input checking, error messages, idioms, test names). Drawn from the
   [tidyverse style guide](https://style.tidyverse.org/) and
   [tidy design principles](https://design.tidyverse.org/).
 
@@ -56,7 +56,8 @@ just test
 ## Evals
 
 `evals/` holds a `claude plugin eval` suite:
-two cases per rule skill (one review, one writing task), two `r-review`
+two cases per rule skill (one review, one writing task), plus a second pair
+for the `r-code-style` argument, input-checking, and idiom rules, two `r-review`
 cases on a change that touches all three aspects (one inline, one with the
 reviewer agents), and one negative case that checks no skill fires on a
 Python task. Each case gives an R snippet, diff, or `NEWS.md` with seeded rule
@@ -68,7 +69,7 @@ just eval                          # every case, with and without the plugin
 just eval --tag r-news --runs 1    # one skill, one run per case
 ```
 
-Each run is a full Claude session on your account, so the full suite (9 cases,
+Each run is a full Claude session on your account, so the full suite (11 cases,
 3 runs, 2 arms) costs a few dollars. Results go to `evals/results/`, which git
 ignores.
 

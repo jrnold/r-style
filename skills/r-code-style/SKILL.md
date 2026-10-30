@@ -1,6 +1,6 @@
 ---
 name: r-code-style
-description: Judgment-based review rules for R package code from the tidyverse style guide and tidy design principles, covering what air, styler, and lintr cannot check - naming, comments, pipes, function and argument design, error messages, and test naming. Use when reviewing or writing R code, doing a code review of an R diff, designing function signatures, or writing error messages in an R package. Complements r-lib:cli (error mechanics), r-lib:lifecycle (deprecation), r-lib:testing-r-packages (test mechanics), roxygen-style (documentation prose), and r-news (NEWS.md).
+description: Judgment-based review rules for R package code from the tidyverse style guide and tidy design principles, covering what air, styler, and lintr cannot check - naming, comments, pipes, function and argument design, dots, input checking, error messages, idioms, and test naming. Use when reviewing or writing R code, doing a code review of an R diff, designing function signatures, or writing error messages in an R package. Complements r-lib:cli (error mechanics), r-lib:lifecycle (deprecation), r-lib:testing-r-packages (test mechanics), roxygen-style (documentation prose), and r-news (NEWS.md).
 ---
 
 # R code review: what linters can't check
@@ -94,15 +94,48 @@ Use `cli` (`r-lib:cli`). The wording rules:
 
 ## Tests
 
-31. **Test file mirrors the `R/` file** (`R/foofy.R` -> `tests/testthat/test-foofy.R`)
-    unless the project documents another layout. Use `usethis::use_test()`.
+31. **Test file layout:** see `r-lib:r-package-development`.
 32. **Test names state the behavior** being checked, because the name appears
     in failure output. Test mechanics: `r-lib:testing-r-packages`.
+
+## Arguments and dots
+
+33. **Dot-prefix the named arguments of a function whose `...` takes
+    user-named inputs** (`.x`, `.f`, `.by`), so a user's name can't partially
+    match or collide with them.
+34. **Check `...` is used.** When `...` exists for methods or future
+    extension, call `rlang::check_dots_empty()`, `check_dots_used()`, or
+    `check_dots_unnamed()`, so a misspelled argument errors instead of
+    vanishing.
+35. **Mutually exclusive arguments** both default to `NULL` and are checked
+    with `rlang::check_exclusive()`. Don't let one silently win.
+36. **Reuse the ecosystem's argument names and meanings** (`na.rm`, `.by`,
+    `.keep`, `names_to`) instead of synonyms. A family of functions shares a
+    prefix (`str_`), so autocomplete finds the family.
+37. **Vectorised arguments recycle by tidyverse rules:** length 1 or the
+    common size; any other length is an error. Where vctrs is a dependency,
+    use `vec_size()` and `vec_recycle_common()`, not `length()` and `rep()`.
+
+## Input checking
+
+38. **Check inputs with the rlang standalone helpers**
+    (`usethis::use_standalone("r-lib/rlang", "types-check")`: `check_string()`,
+    `check_bool()`, `check_number_whole()`, ...) instead of hand-rolled
+    `if (!is.character(x)) stop()`. They give rule 25 wording for free. Don't
+    edit `import-standalone-*.R` files; update them with `use_standalone()`.
+
+## Idioms
+
+39. **`seq_len(n)`, not `1:n`,** when `n` can be 0: `1:0` is `c(1, 0)`.
+40. **`vapply()` or `purrr::map_*()`, not `sapply()`,** whose return type
+    depends on the input values (rule 20).
+41. **No `library()`, `require()`, `source()`, or `setwd()` in `R/`.**
+    Dependencies go through `DESCRIPTION` and the namespace.
 
 ## Using this in a review
 
 Report findings as `file:line: rule N: message`, most important first. Cite
 the rule number so the author can look it up. Don't churn code that passes
 these rules over taste, and keep style-only fixes in a separate change from
-behavior changes. Rules 14-23 are API decisions: raise them for new or changed
-exports, and don't demand a breaking change to an existing one.
+behavior changes. Rules 14-23 and 33-37 are API decisions: raise them for new
+or changed exports, and don't demand a breaking change to an existing one.

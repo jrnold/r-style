@@ -77,7 +77,7 @@ Do these yourself in either mode, because they need the whole change:
 1. Drop duplicates. When two aspects report the same line and problem, keep
    the one with the more specific rule.
 2. Rank: bugs and breaking API changes, then missing docs, NEWS bullets, or
-   tests, then design (`code:14`-`23`), then wording and style.
+   tests, then design (`code:14`-`23`, `code:33`-`37`), then wording and style.
 3. Write each finding as `file:line: [prefix:N] message`, for example
    `R/fit.R:12: [code:25] Error says "should"; use "must" and name the type received.`
    The prefix matters: each skill numbers its rules from 1.
@@ -85,4 +85,5 @@ Do these yourself in either mode, because they need the whole change:
    group the findings under **Must fix**, **Should fix**, and **Consider**.
 
 Follow the skills' review limits: don't churn correct code or prose over
-taste, and raise API rules (`code:14`-`23`) only for new or changed exports.
+taste, and raise API rules (`code:14`-`23`, `code:33`-`37`) only for new or
+changed exports.

@@ -1,6 +1,6 @@
 ---
 name: r-code-reviewer
-description: "Reviews the R code in an R package change against the r-code-style rules (naming, comments, pipes, function and argument design, error messages, tests). Normally launched by the r-review skill with a diff and a package root; use directly only for a review of that one aspect."
+description: "Reviews the R code in an R package change against the r-code-style rules (naming, comments, pipes, function and argument design, dots, input checking, error messages, idioms, tests). Normally launched by the r-review skill with a diff and a package root; use directly only for a review of that one aspect."
 model: inherit
 color: blue
 tools: ["Read", "Grep", "Glob", "Bash", "Skill"]
